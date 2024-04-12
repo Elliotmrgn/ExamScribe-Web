@@ -3,11 +3,11 @@ variable "region" {
 }
 
 variable "path_source_code" {
-  default = "./lambda-python-code/pdf_processing.py"
+  default = "lambda-python-code/source/"
 }
 
-variable "path_layer_source" {
-  default = "lambda-python-code/python/lib/python3.12/site-packages/"
+variable "path_package_layer_source" {
+  default = "lambda-python-code/packages/python/lib/python3.12/site-packages/"
 }
 
 variable "lambda_function_name" {

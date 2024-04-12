@@ -74,7 +74,7 @@ export default function Dashboard() {
         {/* TODO: Edit data of table and read in from */}
         <Grid item xs={12}>
           <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-            <QuizList onSelectedItem = {setSelectedItem} />
+            <QuizList onSelectedItem = {setSelectedItem} populateData = {""}/>
           </Paper>
         </Grid>
       </Grid>

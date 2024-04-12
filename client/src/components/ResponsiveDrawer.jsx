@@ -9,7 +9,9 @@ import List from '@mui/material/List';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { mainListItems } from './DrawerList'
+import { Link } from "react-router-dom";
 
 import { Outlet } from 'react-router-dom';
 
@@ -68,9 +70,20 @@ function ResponsiveDrawer(props) {
           >
             <MenuIcon />
           </IconButton>
+          
           <Typography variant="h6" noWrap component="div">
-            Responsive drawer
+            Dashboard
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <IconButton 
+              color="inherit"
+              edge = "end"
+              aria-label="login"
+              >
+              <AccountCircleIcon />
+            </IconButton>
+          </Link>
         </Toolbar>
       </AppBar>
       <Box

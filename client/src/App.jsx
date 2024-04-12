@@ -1,14 +1,14 @@
-import { Container } from '@mui/material';
-import Header from './components/Header';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 import ResponsiveDrawer from './components/ResponsiveDrawer';
 
 // import './App.css'
 
 function App() {
   return (
-    <ResponsiveDrawer />
-    // <Container maxWidth="sm">
-    // </Container>
+    <>
+      <ResponsiveDrawer />
+      {/* <AmplifySignOut /> */}
+    </>
   );
 }
 
