@@ -4,6 +4,8 @@ import uuid
 import time
 from question_extraction import Chapter
 
+# TODO: 
+
 
 class PDF_Processing:
     def __init__(self, pdf):
@@ -16,7 +18,12 @@ class PDF_Processing:
         self.total_questions = 0
         self.question_bank = []
         
+        
     def build_chapters(self):
+        """ Builds a map of the chapters for extraction. 
+            This helps simplify the question and answer extraction to reduce
+            future checks for page spillover and false matches."""
+            
         toc = self.doc.get_toc()  # gets table of contents
         match_answer_chapter_to_question_chapter = 0  # matches answer chapter to corresponding question chapter
         is_answer_section = False  # indicator if started answer chapters
@@ -48,6 +55,7 @@ class PDF_Processing:
         # Returns list of chapter objects
         return
        
+       
     def _extract_question_chapter_info(self, chapter_title, start_page, end_page):
         # Grab the chapter number from the chapter title
 
@@ -60,18 +68,6 @@ class PDF_Processing:
 
         return Chapter(self.doc, chapter_num, chapter_title, start_page, end_page, chapter_total_questions)
 
-    def _extract_page_data(self, page_number, is_answer_section):
-        # Extracts either questions from page or answer numbers
-        page_text = self.doc[page_number].get_text()
-        if page_text:
-            if not is_answer_section:
-                question_regex = r"^([\d|\s\d][\d' ']*)\.\s(.*(?:\r?\n(?![\s]*[A-Z]\.\s)[^\n]*|)*)(.*(?:\r?\n(?![\d|\s\d][\d' ']*\.\s)[^\n]*|)*)"
-                page_questions = re.findall(question_regex, page_text, re.MULTILINE)
-                return page_questions
-            elif is_answer_section:
-                answer_regex = r"^[\d|\s\d][\d' ']*(?=\.[\s]*[A-Z])"
-                page_answers = re.findall(answer_regex, page_text, re.MULTILINE)
-                return page_answers
 
     def _validate_chapter_start_page(self, start_page, end_page, is_answer_section):
         # Checks which page is the actual starting page
@@ -84,6 +80,7 @@ class PDF_Processing:
                 return start_page
             # Otherwise check next page
             start_page += 1
+
 
     def _validate_chapter_end_page(self, start_page, end_page, is_answers_section, total_questions=None):
         # Checks which page is the actual end page
@@ -100,6 +97,7 @@ class PDF_Processing:
 
             end_page -= 1
 
+
     def _find_total_questions(self, end_page):
         # Grabs the questions on the last page
         page_data = self._extract_page_data(end_page, False)
@@ -107,17 +105,33 @@ class PDF_Processing:
         question_numbers = [int(questions[0].replace(' ', '')) for questions in page_data]
         # Returns the highest question
         return max(question_numbers)
+    
+    
+    def _extract_page_data(self, page_number, is_answer_section):
+        # Extracts either questions from page or answer numbers
+        page_text = self.doc[page_number].get_text()
+        if page_text:
+            if not is_answer_section:
+                question_regex = r"^([\d|\s\d][\d' ']*)\.\s(.*(?:\r?\n(?![\s]*[A-Z]\.\s)[^\n]*|)*)(.*(?:\r?\n(?![\d|\s\d][\d' ']*\.\s)[^\n]*|)*)"
+                page_questions = re.findall(question_regex, page_text, re.MULTILINE)
+                return page_questions
+            elif is_answer_section:
+                answer_regex = r"^[\d|\s\d][\d' ']*(?=\.[\s]*[A-Z])"
+                page_answers = re.findall(answer_regex, page_text, re.MULTILINE)
+                return page_answers
+
 
     def _extract_answer_info(self, chapter, start_page, end_page):
         chapter.answer_start_page = self._validate_chapter_start_page(start_page, end_page, True)
         chapter.answer_end_page = self._validate_chapter_end_page(start_page, end_page, True, chapter.total_questions)
+        
         
     def build_question_bank(self):
         for chapter in self.chapters:
             chapter.build_chapter_question_bank()
             self.question_bank.append({chapter.title: chapter.chapter_question_bank})
 
-
+    # Currently unused
     def get_total_questions(self):
         for chapter in self.chapters:
             self.total_questions += chapter.total_questions

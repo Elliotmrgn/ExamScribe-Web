@@ -62,11 +62,6 @@ def lambda_handler(event, context):
         except Exception as e:
             print(f"Error adding item to {question_bank_table}: {e}")
 
-        # Process the extracted text (e.g., search for specific patterns)
-        # For example, print the first 100 characters
-
-        # You can further analyze or store the extracted content as needed
-
         return {
             'statusCode': 200,
             'body': json.dumps('PDF processed successfully')

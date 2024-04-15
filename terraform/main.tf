@@ -24,7 +24,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.exam_scribe_lambda_function.arn
-    events              = ["s3:ObjectCreated:Put"]
+    events              = ["s3:ObjectCreated:*"]
   }
 }
 
@@ -112,7 +112,11 @@ resource "aws_iam_policy" "lambda_s3_policy" {
     Statement = [
       {
         Action = [
-          "s3:GetObject"
+          "s3:Get*",
+          "s3:List*",
+          "s3:Describe*",
+          "s3-object-lambda:Get*",
+          "s3-object-lambda:List*"
         ],
         Effect   = "Allow",
         Resource = aws_s3_bucket.exam_scribe_bucket.arn
@@ -141,13 +145,11 @@ resource "aws_iam_user_policy_attachment" "exam_scribe_user_s3_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
-resource "aws_iam_access_key" "exam_scribe_key" {
-  user = aws_iam_user.exam_scribe_user.name
-}
 
-# resource "aws_iam_user_policy" "exam_scribe_user_s3_policy" {
+# TODO: Figure out what permissions are missing for this to work.
+
+# resource "aws_iam_policy" "exam_scribe_user_s3_policy" {
 #   name = "exam_scribe_user_s3_policy"
-#   user = aws_iam_user.exam_scribe_user.name
 
 #   policy = jsonencode({
 #     Version = "2012-10-17",
@@ -155,16 +157,25 @@ resource "aws_iam_access_key" "exam_scribe_key" {
 #       {
 #         Effect = "Allow",
 #         Action = [
-#           "s3:*"
-#           # "s3:PutObject",
-#           # "s3:GetObject",
-#           # "s3:DeleteObject"
+#           # "s3:*"
+#           "s3:PutObject",
+#           "s3:GetObject",
+#           "s3:DeleteObject"
 #         ],
 #         Resource = aws_s3_bucket.exam_scribe_bucket.arn
 #       }
 #     ]
 #   })
 # }
+
+# resource "aws_iam_user_policy_attachment" "exam_scribe_user_s3_policy" {
+#   user       = aws_iam_user.exam_scribe_user.name
+#   policy_arn = aws_iam_policy.exam_scribe_user_s3_policy.arn
+# }
+
+resource "aws_iam_access_key" "exam_scribe_key" {
+  user = aws_iam_user.exam_scribe_user.name
+}
 
 resource "local_sensitive_file" "access_keys" {
   content  = "VITE_APP_AWS_REGION=${var.region}\nVITE_APP_AWS_ACCESS_KEY_ID=${aws_iam_access_key.exam_scribe_key.id}\nVITE_APP_AWS_SECRET_ACCESS_KEY=${aws_iam_access_key.exam_scribe_key.secret}\nVITE_APP_AWS_BUCKET_NAME=${aws_s3_bucket.exam_scribe_bucket.id}"
@@ -189,11 +200,6 @@ data "archive_file" "create_dist_pkg" {
   type        = "zip"
 }
 
-# data "archive_file" "create_layer_pkg" {
-#   source_dir  = "${path.module}/${var.path_package_layer_source}"
-#   output_path = var.layer_output_path
-#   type        = "zip"
-# }
 
 # ---------------LAMBDA---------------------------
 
@@ -203,18 +209,11 @@ resource "aws_lambda_function" "exam_scribe_lambda_function" {
   function_name    = var.lambda_function_name
   role             = aws_iam_role.lambda_role.arn
   source_code_hash = data.archive_file.create_dist_pkg.output_base64sha256
-  handler          = "upload_lambda.lambda_handler" # assuming your entry point is lambda_handler
-  runtime          = var.runtime                    # specify your Python runtime version
-  # layers           = [aws_lambda_layer_version.pymupdf_layer.arn]
+  handler          = "upload_lambda.lambda_handler"
+  runtime          = var.runtime                    
   timeout          = 10
 }
 
-# resource "aws_lambda_layer_version" "pymupdf_layer" {
-#   layer_name          = "pymupdf"
-#   description         = "pdf parser package"
-#   filename            = var.layer_output_path
-#   compatible_runtimes = ["python3.12"]
-# }
 
 resource "aws_lambda_function_url" "exam_scribe_lambda_function_url" {
   function_name      = aws_lambda_function.exam_scribe_lambda_function.function_name
