@@ -56,8 +56,9 @@ class PDF_Processing:
                 # Once last chapter gets its answer data, stop checking
                 if len(self.chapters) == match_answer_chapter_to_question_chapter:
                     break
-        # Returns list of chapter objects
         print("** Chapter map finished building")
+        # Set total questions when chapters are done
+        self.get_total_questions()
         return
        
        

@@ -53,6 +53,8 @@ def lambda_handler(event, context):
             print(f"Item with ID {data_for_user_table['QuizID']['S']} added successfully to {user_table}.")
         except Exception as e:
             print(f"Error adding item to {user_table}: {e}")
+        
+        
             
         try:
             response = dynamodb.put_item(
