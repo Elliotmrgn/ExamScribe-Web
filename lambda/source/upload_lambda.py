@@ -21,7 +21,6 @@ def lambda_handler(event, context):
         pdf.build_question_bank()
         userid = "1" # this will change when auth is implemented
         
-        return "SUCCEEDED PROCESSING PDF"
         
         data_for_user_table = {
             "UserID": {'S': userid},
@@ -31,6 +30,9 @@ def lambda_handler(event, context):
             "Creation Date": {'S': pdf.creation_date},
             "Total Questions": {'N': pdf.total_questions}
         }
+        
+        print("SUCCEEDED PROCESSING PDF")
+        return 
     
         data_for_question_bank_table = {
             "QuizID": {'S':pdf.quiz_id},

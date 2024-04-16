@@ -28,6 +28,10 @@ class PDF_Processing:
         match_answer_chapter_to_question_chapter = 0  # matches answer chapter to corresponding question chapter
         is_answer_section = False  # indicator if started answer chapters
 
+        # Sets title if not present in metadata
+        if not self.title:
+            self.title = toc[0][1]
+        
         for index, entry in enumerate(toc):
             # entry[0] = chapter depth, entry[1] = chapter title, entry[2] = starting page number
             chapter_title = entry[1]
