@@ -119,7 +119,7 @@ resource "aws_iam_policy" "lambda_s3_policy" {
           "s3-object-lambda:List*"
         ],
         Effect   = "Allow",
-        Resource = aws_s3_bucket.exam_scribe_bucket.arn
+        Resource = "${aws_s3_bucket.exam_scribe_bucket.arn}/*"
     }]
   })
 }
