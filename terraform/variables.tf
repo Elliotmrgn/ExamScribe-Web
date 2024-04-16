@@ -3,11 +3,7 @@ variable "region" {
 }
 
 variable "path_source_code" {
-  default = "lambda-python-code/source/"
-}
-
-variable "path_package_layer_source" {
-  default = "lambda-python-code/packages/python/lib/python3.12/site-packages/"
+  default = "../lambda/"
 }
 
 variable "lambda_function_name" {
@@ -23,8 +19,12 @@ variable "output_path" {
   default = "my_deployment_package.zip"
 }
 
-variable "layer_output_path" {
-  default = "lambda_layer.zip"
-}
+# variable "path_package_layer_source" {
+#   default = "lambda-python-code/packages/python/lib/python3.12/site-packages/"
+# }
+
+# variable "layer_output_path" {
+#   default = "lambda_layer.zip"
+# }
 
 
