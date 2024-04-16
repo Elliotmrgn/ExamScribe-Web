@@ -53,6 +53,7 @@ class PDF_Processing:
                 if len(self.chapters) == match_answer_chapter_to_question_chapter:
                     break
         # Returns list of chapter objects
+        print("** Chapter map finished building")
         return
        
        
@@ -127,9 +128,10 @@ class PDF_Processing:
         
         
     def build_question_bank(self):
-        for chapter in self.chapters:
+        for i, chapter in enumerate(self.chapters):
             chapter.build_chapter_question_bank()
             self.question_bank.append({chapter.title: chapter.chapter_question_bank})
+            print(f"** CHAPTER {i} FINISHED EXTRACTING!! ")
 
     # Currently unused
     def get_total_questions(self):

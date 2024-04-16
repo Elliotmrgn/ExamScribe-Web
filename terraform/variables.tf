@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "path_source_code" {
-  default = "../lambda/"
+  default = "../lambda/source"
 }
 
 variable "lambda_function_name" {

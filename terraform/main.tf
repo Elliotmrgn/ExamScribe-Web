@@ -113,10 +113,6 @@ resource "aws_iam_policy" "lambda_s3_policy" {
       {
         Action = [
           "s3:GetObject",
-          # "s3:List*",
-          # "s3:Describe*",
-          # "s3-object-lambda:Get*",
-          # "s3-object-lambda:List*"
         ],
         Effect   = "Allow",
         Resource = "${aws_s3_bucket.exam_scribe_bucket.arn}/*"
@@ -211,7 +207,8 @@ resource "aws_lambda_function" "exam_scribe_lambda_function" {
   handler          = "upload_lambda.lambda_handler"
   runtime          = var.runtime
   layers           = [aws_lambda_layer_version.pymupdf_layer.arn]
-  timeout          = 10
+  timeout          = 60
+  memory_size      = 256
 }
 
 resource "aws_lambda_layer_version" "pymupdf_layer" {
