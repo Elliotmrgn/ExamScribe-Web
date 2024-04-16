@@ -18,7 +18,7 @@ resource "aws_s3_bucket_acl" "exam_scribe_bucket" {
   acl    = "private"
 }
 
-  # Notification to trigger lambda function
+# Notification to trigger lambda function
 resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.exam_scribe_bucket.id
 
@@ -200,6 +200,12 @@ data "archive_file" "create_dist_pkg" {
   type        = "zip"
 }
 
+data "archive_file" "create_layer_pkg" {
+  source_dir  = var.layer_source
+  output_path = var.layer_output_path
+  type        = "zip"
+}
+
 
 # ---------------LAMBDA---------------------------
 
@@ -210,8 +216,17 @@ resource "aws_lambda_function" "exam_scribe_lambda_function" {
   role             = aws_iam_role.lambda_role.arn
   source_code_hash = data.archive_file.create_dist_pkg.output_base64sha256
   handler          = "upload_lambda.lambda_handler"
-  runtime          = var.runtime                    
+  runtime          = var.runtime
+  layers           = [aws_lambda_layer_version.pymupdf_layer.arn]
   timeout          = 10
+}
+
+resource "aws_lambda_layer_version" "pymupdf_layer" {
+  layer_name          = "pymupdf"
+  description         = "pdf parser package"
+  filename            = var.layer_output_path
+  compatible_runtimes = ["python3.12"]
+  source_code_hash    = data.archive_file.create_layer_pkg.output_base64sha256
 }
 
 

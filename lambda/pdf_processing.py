@@ -1,4 +1,4 @@
-import fitz
+from fitz import fitz
 import re
 import uuid
 import time
