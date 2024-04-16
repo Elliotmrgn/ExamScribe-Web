@@ -33,4 +33,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Ignore .env
 *.env
+
+# Ignore package zips
+lambda_layer.zip
+my_deployment_package.zip
