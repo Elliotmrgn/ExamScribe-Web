@@ -112,11 +112,11 @@ resource "aws_iam_policy" "lambda_s3_policy" {
     Statement = [
       {
         Action = [
-          "s3:Get*",
-          "s3:List*",
-          "s3:Describe*",
-          "s3-object-lambda:Get*",
-          "s3-object-lambda:List*"
+          "s3:GetObject",
+          # "s3:List*",
+          # "s3:Describe*",
+          # "s3-object-lambda:Get*",
+          # "s3-object-lambda:List*"
         ],
         Effect   = "Allow",
         Resource = "${aws_s3_bucket.exam_scribe_bucket.arn}/*"
@@ -140,38 +140,31 @@ resource "aws_iam_user" "exam_scribe_user" {
   name = "exam_scribe_user"
 }
 
-resource "aws_iam_user_policy_attachment" "exam_scribe_user_s3_policy" {
-  user       = aws_iam_user.exam_scribe_user.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+# TODO: Add DynamoDB Read Access
+
+resource "aws_iam_policy" "exam_scribe_user_s3_policy" {
+  name = "exam_scribe_user_s3_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+        ],
+        Resource = "${aws_s3_bucket.exam_scribe_bucket.arn}/*"
+      }
+    ]
+  })
 }
 
-
-# TODO: Figure out what permissions are missing for this to work.
-
-# resource "aws_iam_policy" "exam_scribe_user_s3_policy" {
-#   name = "exam_scribe_user_s3_policy"
-
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect = "Allow",
-#         Action = [
-#           # "s3:*"
-#           "s3:PutObject",
-#           "s3:GetObject",
-#           "s3:DeleteObject"
-#         ],
-#         Resource = aws_s3_bucket.exam_scribe_bucket.arn
-#       }
-#     ]
-#   })
-# }
-
-# resource "aws_iam_user_policy_attachment" "exam_scribe_user_s3_policy" {
-#   user       = aws_iam_user.exam_scribe_user.name
-#   policy_arn = aws_iam_policy.exam_scribe_user_s3_policy.arn
-# }
+resource "aws_iam_user_policy_attachment" "exam_scribe_user_s3_policy" {
+  user       = aws_iam_user.exam_scribe_user.name
+  policy_arn = aws_iam_policy.exam_scribe_user_s3_policy.arn
+}
 
 resource "aws_iam_access_key" "exam_scribe_key" {
   user = aws_iam_user.exam_scribe_user.name
