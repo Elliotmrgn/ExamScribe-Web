@@ -9,7 +9,7 @@ from question_extraction import Chapter
 
 class PDF_Processing:
     def __init__(self, pdf):
-        self.doc = fitz.open(pdf)
+        self.doc = fitz.open(stream = pdf)
         self.quiz_id = uuid.uuid4().hex
         self.creation_date = str(int(time.time()))
         self.title = self.doc.metadata.get("title")

@@ -5,7 +5,7 @@ from pdf_processing import PDF_Processing
 
 
 def lambda_handler(event, context):
-      
+    print("** EVENT:  ", event)
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     object_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
     s3_client = boto3.client('s3')
