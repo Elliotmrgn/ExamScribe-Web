@@ -96,7 +96,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
           "dynamodb:DeleteItem",
           "dynamodb:Scan",
           "dynamodb:Query",
-          "dynamodb:DescribeTable"
+          "dynamodb:DescribeTable",
+          "dynamodb:BatchWriteItem"
         ],
         Effect   = "Allow",
         Resource = [aws_dynamodb_table.user_data.arn, aws_dynamodb_table.question_bank.arn]
@@ -239,9 +240,15 @@ resource "aws_dynamodb_table" "user_data" {
   name         = "UserDataTable"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "UserID"
+  range_key    = "QuizID"
 
   attribute {
     name = "UserID"
+    type = "S"
+  }
+
+  attribute {
+    name = "QuizID"
     type = "S"
   }
 
@@ -254,11 +261,17 @@ resource "aws_dynamodb_table" "question_bank" {
   name         = "QuestionBankTable"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "QuizID"
+  range_key    = "ChapterNum"
 
 
   attribute {
     name = "QuizID"
     type = "S"
+  }
+
+  attribute {
+    name = "ChapterNum"
+    type = "N"
   }
 
 }

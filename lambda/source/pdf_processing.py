@@ -16,7 +16,7 @@ class PDF_Processing:
         self.author = self.doc.metadata.get("author")
         self.chapters = []
         self.total_questions = 0
-        self.question_bank = []
+        self.question_bank = {}
         
         
     def build_chapters(self):
@@ -133,12 +133,11 @@ class PDF_Processing:
         
         
     def build_question_bank(self):
-        for i, chapter in enumerate(self.chapters):
+        for chapter in self.chapters:
             chapter.build_chapter_question_bank()
-            self.question_bank.append({chapter.title: chapter.chapter_question_bank})
-            print(f"** CHAPTER {i} FINISHED EXTRACTING!! ")
+            self.question_bank[chapter.title] = chapter.chapter_question_bank
 
-    # Currently unused
+
     def get_total_questions(self):
         for chapter in self.chapters:
             self.total_questions += chapter.total_questions
